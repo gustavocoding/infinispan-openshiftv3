@@ -35,7 +35,7 @@ _output/local/go/bin/openshift start
 <OPENSHIFT_HOME>/_output/local/go/bin/openshift kubectl create -f infinispan-pod.json
 ```
 
-The server console can be seen on ```http://localhost:8888/```
+The server console can be seen on ```http://localhost:9090/```
 
 ### Inspecting via API
 
