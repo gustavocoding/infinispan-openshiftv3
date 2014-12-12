@@ -1,0 +1,23 @@
+{
+  "id": "infinispan-openshift",
+  "kind": "Pod",
+  "apiVersion":"v1beta2",
+  "labels": {
+    "name": "infinispan"
+  },
+  "desiredState": {
+    "manifest": {
+      "version": "v1beta1",
+      "id": "infinispan-openshift",
+      "containers": [{
+        "name": "infinispan-openshift",
+        "image": "jboss/infinispan-server",
+        "command": ["/opt/jboss/infinispan-server/bin/standalone.sh","-b","0.0.0.0","-bmanagement","0.0.0.0"],
+        "ports": [{
+          "hostPort": 9990,
+          "containerPort": 9990 
+        }]
+      }]
+    }
+  }
+}
