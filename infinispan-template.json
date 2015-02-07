@@ -1,0 +1,81 @@
+{
+  "kind": "Template",
+  "apiVersion": "v1beta1",
+  "metadata": {
+    "name": "ispn",
+    "annotations": {
+      "description": "Example of an Infinispan cluster deployed on Openshift v3"
+    }
+  },
+  "items": [
+    {
+      "id": "jgroups-gossip-service",
+      "kind": "Service",
+      "apiVersion": "v1beta1",
+      "port": 11000,
+      "containerPort" : 12001,
+      "selector": {
+        "name": "gossip"
+      }
+    },
+     {
+      "id": "jgroups-gossip-controller",
+      "kind": "ReplicationController",
+      "apiVersion": "v1beta1",
+      "desiredState": {
+        "replicas": 1,
+        "replicaSelector": {"name": "gossip"},
+        "podTemplate": {
+          "desiredState": {
+            "manifest": {
+              "version": "v1beta1",
+              "id": "gossip",
+              "containers": [{
+                   "name": "jgroups-gossip",
+                   "image": "gustavonalle/jgroups-gossip",
+                   "ports": [{"containerPort": 12001}]
+              }]
+            }
+          },
+	  "labels": {
+              "name": "gossip"
+          }
+        }
+      },
+      "labels": {
+              "name": "gossip"
+       }
+    },
+    {
+      "id": "infinispan-controller",
+      "kind": "ReplicationController",
+      "apiVersion": "v1beta1",
+      "desiredState": {
+        "replicas": 2,
+        "replicaSelector": {"name": "infinispan-pod"},
+        "podTemplate": {
+          "desiredState": {
+            "manifest": {
+              "version": "v1beta1",
+              "id": "infinispan-pod",
+              "containers": [{
+                   "name": "infinispan-node",
+                   "image": "gustavonalle/infinispan-server",
+                   "command": ["/opt/jboss/infinispan-server/bin/start.sh","-c","clustered.xml","-Dgossip=$JGROUPS_GOSSIP_SERVICE_SERVICE_HOST[$JGROUPS_GOSSIP_SERVICE_SERVICE_PORT]"],
+                   "ports": [{"containerPort": 7600},{"containerPort": 57600}]
+              }
+             ]
+            }
+          },
+          "labels": {
+            "name": "infinispan-pod"
+	  }
+        }
+      },
+      "labels": {
+           "name": "infinispan-pod"
+      }
+    }
+  ]
+}
+
